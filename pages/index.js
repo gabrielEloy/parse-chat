@@ -1,15 +1,33 @@
 import { useState } from "react";
 import styles from "../styles/Auth.module.css";
+import { useRouter } from "next/router";
+import Parse from "parse";
 
 export default function Auth() {
+  const router = useRouter();
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUserName] = useState(false);
   const [password, setPassword] = useState(false);
 
   const toggleIsRegistering = () => setIsRegistering(!isRegistering);
 
-  const handleLogin = () => {};
-  const handleRegister = () => {};
+  const handleLogin = () => {
+    Parse.User.logIn(username, password).then(async (user) => {
+      router.push("/home");
+    });
+  };
+  const handleRegister = () => {
+    const user = new Parse.User();
+
+    user
+      .save({
+        username,
+        password,
+      })
+      .then(() => {
+        handleLogin();
+      });
+  };
 
   const handleAuth = () => (isRegistering ? handleRegister() : handleLogin());
   const [spanText, authText] = isRegistering
